@@ -1,3 +1,3 @@
-module github.com/brianlusina/robin-lb
+module github.com/brianlusina/gochain
 
-go 1.18
+go 1.22

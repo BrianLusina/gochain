@@ -1,5 +1,5 @@
 # ref https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/
-image: golang:1.18
+image: golang:1.22
 
 pipelines:
   default:
