@@ -1,6 +1,9 @@
 package proof
 
 import (
+	"bytes"
+	"encoding/binary"
+	"fmt"
 	"math/big"
 
 	"github.com/brianlusina/gochain/internal/block"
@@ -32,4 +35,26 @@ func NewProofOfWork[T any](block block.Block[T]) *ProofOfWork[T] {
 		Block:  &block,
 		Target: targetVal,
 	}
+}
+
+// ComputeData takes a nonce integer and returns the computed for hashing the block
+// A number used once (nonce) is a value that miners update and include in the data they are hashing in order to find a valid block hash.
+// It is continuously changed for the same input data until a hash is generated that meets the target.
+func (pow *ProofOfWork[T]) ComputeData(nonce int) []byte {
+	blockData := fmt.Sprintf("%s", pow.Block.Data())
+
+	data := bytes.Join(
+		[][]byte{
+			[]byte(pow.Block.PrevHash()),
+			[]byte(blockData),
+			make([]byte, 8),
+			make([]byte, 8),
+		},
+		[]byte{},
+	)
+
+	binary.BigEndian.PutUint64(data[len(data)-16:], uint64(nonce))
+	binary.BigEndian.PutUint64(data[len(data)-8:], uint64(Difficulty))
+
+	return data
 }
