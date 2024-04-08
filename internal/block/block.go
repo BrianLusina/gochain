@@ -29,13 +29,27 @@ type BlockParams[T any] struct {
 	PrevHash string
 }
 
-// New creates a new Block with a given struct of params
+// New creates a new Block with a given struct of params. This is useful for reconstituting a given block from say storage with
+// all the fields provided.
 func New[T any](params BlockParams[T]) *Block[T] {
 	return &Block[T]{
 		hash:     params.Hash,
 		data:     params.Data,
 		prevHash: params.PrevHash,
 	}
+}
+
+// CreateBlock creates a new block given a data item and a previous hash. This will have the
+// hash of the block calculated. All new blocks will have a has value provided
+func CreateBlock[T any](data T, prevHash string) *Block[T] {
+	b := &Block[T]{
+		data:     data,
+		prevHash: prevHash,
+	}
+
+	b.ComputeHash()
+
+	return b
 }
 
 // Hash returns the hash of the current block
