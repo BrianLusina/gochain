@@ -1,5 +1,11 @@
 package block
 
+import (
+	"bytes"
+	"crypto/md5"
+	"fmt"
+)
+
 // Block represents a block in the block chain
 type Block[T any] struct {
 	// hash is the hash of the current block
@@ -45,4 +51,12 @@ func (b *Block[T]) Data() any {
 // PrevHash returns the previous has of the previous block in the chain
 func (b *Block[T]) PrevHash() string {
 	return b.prevHash
+}
+
+// ComputeHash computes the hash of this block from the previous has and the current data
+func (b *Block[T]) ComputeHash() {
+	dataString := fmt.Sprintf("%v", b.data)
+	concatenatedData := bytes.Join([][]byte{[]byte(dataString), []byte(b.prevHash)}, []byte{})
+	hash := md5.Sum(concatenatedData)
+	b.hash = string(hash[:])
 }
