@@ -2,6 +2,7 @@ package proof
 
 import (
 	"bytes"
+	"crypto/md5"
 	"encoding/binary"
 	"fmt"
 	"math/big"
@@ -57,4 +58,26 @@ func (pow *ProofOfWork[T]) ComputeData(nonce int) []byte {
 	binary.BigEndian.PutUint64(data[len(data)-8:], uint64(Difficulty))
 
 	return data
+}
+
+// MineBlock performs the mining process to find a valid block hash that meets a target
+func (pow *ProofOfWork[T]) MineBlock() (int, []byte) {
+	var intHash big.Int
+	var computedHash [16]byte
+
+	nonce := 0
+
+	for {
+		computedData := pow.ComputeData(nonce)
+		computedHash = md5.Sum(computedData)
+		intHash.SetBytes(computedHash[:])
+
+		if intHash.Cmp(pow.Target) == -1 {
+			break
+		}
+
+		nonce++
+	}
+
+	return nonce, computedHash[:]
 }
