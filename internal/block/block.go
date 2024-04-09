@@ -1,11 +1,5 @@
 package block
 
-import (
-	"bytes"
-	"crypto/md5"
-	"fmt"
-)
-
 // Block represents a block in the block chain
 type Block[T any] struct {
 	// hash is the hash of the current block
@@ -16,6 +10,10 @@ type Block[T any] struct {
 
 	// prevHash is the hash of the previous block
 	prevHash string
+
+	// nonce is a number that is used once (nonce) is a value that miners update and include in the data they are hashing in
+	// order to find a valid block hash. It is continuously changed for the same input data until a hash is generated that meets the target.
+	nonce int
 }
 
 type BlockParams[T any] struct {
@@ -27,6 +25,9 @@ type BlockParams[T any] struct {
 
 	// PrevHash is the hash of the previous block
 	PrevHash string
+
+	// Nonce is a number used once
+	Nonce int
 }
 
 // New creates a new Block with a given struct of params. This is useful for reconstituting a given block from say storage with
@@ -36,25 +37,19 @@ func New[T any](params BlockParams[T]) *Block[T] {
 		hash:     params.Hash,
 		data:     params.Data,
 		prevHash: params.PrevHash,
+		nonce:    params.Nonce,
 	}
-}
-
-// CreateBlock creates a new block given a data item and a previous hash. This will have the
-// hash of the block calculated. All new blocks will have a has value provided
-func CreateBlock[T any](data T, prevHash string) *Block[T] {
-	b := &Block[T]{
-		data:     data,
-		prevHash: prevHash,
-	}
-
-	b.ComputeHash()
-
-	return b
 }
 
 // Hash returns the hash of the current block
 func (b *Block[T]) Hash() string {
 	return b.hash
+}
+
+// WithHash updates a blocks hash & returns it with the updated hash
+func (b Block[T]) WithHash(hash string) Block[T] {
+	b.hash = hash
+	return b
 }
 
 // Data returns the data of the current block
@@ -67,10 +62,13 @@ func (b *Block[T]) PrevHash() string {
 	return b.prevHash
 }
 
-// ComputeHash computes the hash of this block from the previous has and the current data
-func (b *Block[T]) ComputeHash() {
-	dataString := fmt.Sprintf("%v", b.data)
-	concatenatedData := bytes.Join([][]byte{[]byte(dataString), []byte(b.prevHash)}, []byte{})
-	hash := md5.Sum(concatenatedData)
-	b.hash = string(hash[:])
+// Nonce returns the number only used once used for computing the hash of the block
+func (b *Block[T]) Nonce() int {
+	return b.nonce
+}
+
+// WithNonce returns a block with the updated nonce
+func (b Block[T]) WithNonce(nonce int) Block[T] {
+	b.nonce = nonce
+	return b
 }

@@ -1,6 +1,9 @@
 package blockchain
 
-import "github.com/brianlusina/gochain/internal/block"
+import (
+	"github.com/brianlusina/gochain/internal/block"
+	"github.com/brianlusina/gochain/internal/factory"
+)
 
 // BlockChain represents the block chain
 type BlockChain[T any] struct {
@@ -28,6 +31,6 @@ func (chain *BlockChain[T]) Blocks() []*block.Block[T] {
 // AddBlock adds a new block to the block chain
 func (chain *BlockChain[T]) AddBlock(data T) {
 	prevBlock := chain.blocks[len(chain.blocks)-1]
-	newBlock := block.CreateBlock(data, prevBlock.PrevHash())
+	newBlock := factory.CreateBlock(data, prevBlock.PrevHash())
 	chain.blocks = append(chain.blocks, newBlock)
 }

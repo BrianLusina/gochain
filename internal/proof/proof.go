@@ -91,8 +91,5 @@ func (pow *ProofOfWork[T]) Validate() bool {
 	computedHash := md5.Sum(computedData)
 	intHash.SetBytes(computedHash[:])
 
-	if intHash.Cmp(pow.Target) == -1 {
-		return true
-	}
-	return false
+	return intHash.Cmp(pow.Target) == -1
 }
