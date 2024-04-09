@@ -81,3 +81,18 @@ func (pow *ProofOfWork[T]) MineBlock() (int, []byte) {
 
 	return nonce, computedHash[:]
 }
+
+// Validate validates the derived has from the proof of work algorithm
+func (pow *ProofOfWork[T]) Validate() bool {
+	var intHash big.Int
+
+	computedData := pow.ComputeData(pow.Block.Nonce())
+
+	computedHash := md5.Sum(computedData)
+	intHash.SetBytes(computedHash[:])
+
+	if intHash.Cmp(pow.Target) == -1 {
+		return true
+	}
+	return false
+}
