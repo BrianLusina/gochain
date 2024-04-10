@@ -3,6 +3,7 @@ package blockchain
 import (
 	"github.com/brianlusina/gochain/internal/block"
 	"github.com/brianlusina/gochain/internal/factory"
+	"github.com/brianlusina/gochain/internal/transaction"
 )
 
 // BlockChain represents the block chain
@@ -29,8 +30,16 @@ func (chain *BlockChain[T]) Blocks() []*block.Block[T] {
 }
 
 // AddBlock adds a new block to the block chain
-func (chain *BlockChain[T]) AddBlock(data T) {
+func (chain *BlockChain[T]) AddBlock(data T, coinbaseRcpt string, amount float64, transactions []*transaction.Transaction) {
 	prevBlock := chain.blocks[len(chain.blocks)-1]
-	newBlock := factory.CreateBlock(data, prevBlock.PrevHash())
+
+	coinbaseTransaction := transaction.New(transaction.TransactionParams{
+		Sender:   "Coinbase",
+		Receiver: coinbaseRcpt,
+		Amount:   amount,
+		Coinbase: true,
+	})
+
+	newBlock := factory.CreateBlock(data, prevBlock.PrevHash(), append([]*transaction.Transaction{coinbaseTransaction}, transactions...))
 	chain.blocks = append(chain.blocks, newBlock)
 }
