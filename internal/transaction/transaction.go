@@ -45,3 +45,23 @@ func New(params TransactionParams) *Transaction {
 		coinbase: params.Coinbase,
 	}
 }
+
+// Sender returns the sender in the transaction
+func (trx *Transaction) Sender() string {
+	return trx.sender
+}
+
+// Receiver returns the recipient in the transaction
+func (trx *Transaction) Receiver() string {
+	return trx.receiver
+}
+
+// Amount returns the amount in the transaction
+func (trx *Transaction) Amount() float64 {
+	return trx.amount
+}
+
+// Coinbase returns whether the transaction is a coinbase transaction
+func (trx *Transaction) Coinbase() bool {
+	return trx.coinbase
+}

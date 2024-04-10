@@ -84,3 +84,8 @@ func (b Block[T]) WithNonce(nonce int) Block[T] {
 	b.nonce = nonce
 	return b
 }
+
+// Transactions lists the transactions for this block
+func (b Block[T]) Transactions() []*transaction.Transaction {
+	return b.transactions
+}
