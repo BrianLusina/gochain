@@ -1,8 +1,15 @@
 package wallet
 
 import (
+	"crypto"
+	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha256"
+	"encoding/base64"
+	"errors"
 	"fmt"
+
+	"github.com/brianlusina/gochain/internal/transaction"
 )
 
 // Wallet structure representing a user's wallet with access to assets.
@@ -27,4 +34,43 @@ func New() (*Wallet, error) {
 		privateKey: privateKey,
 		publicKey:  publicKey,
 	}, nil
+}
+
+// SignTransaction signs a given transaction and returns the signature of the signing or an error
+// the signature is then used to validate a transaction
+func (w *Wallet) SignTransaction(transaction *transaction.Transaction) (string, error) {
+	// concatenate fields of transaction
+	data := fmt.Sprintf("%s%s%f%t", transaction.Sender(), transaction.Receiver(), transaction.Amount(), transaction.Coinbase())
+
+	// hash string;
+	hashedData := sha256.Sum256([]byte(data))
+
+	// sign the hash using wallet private key
+	signature, err := rsa.SignPKCS1v15(rand.Reader, w.privateKey, crypto.SHA256, hashedData[:])
+	if err != nil {
+		return "", err
+	}
+
+	// encode signature as base64 string & returns the signature
+	return base64.StdEncoding.EncodeToString(signature), nil
+}
+
+// VerifyTransaction verifies a given transaction with a public key and the signature returning an error if verification fails
+func VerifyTransaction(transaction *transaction.Transaction, publicKey *rsa.PublicKey, signature string) error {
+	dataString := fmt.Sprintf("%s%s%f%t", transaction.Sender(), transaction.Receiver(), transaction.Amount(), transaction.Coinbase())
+
+	hashedData := sha256.Sum256([]byte(dataString))
+
+	signatureBytes, err := base64.StdEncoding.DecodeString(signature)
+
+	if err != nil {
+		return err
+	}
+
+	err = rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashedData[:], signatureBytes)
+
+	if err != nil {
+		return errors.New("transaction Signature not valid")
+	}
+	return nil
 }
