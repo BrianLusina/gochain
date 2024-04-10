@@ -8,10 +8,18 @@ import (
 	"github.com/brianlusina/gochain/internal/blockchain"
 	"github.com/brianlusina/gochain/internal/factory"
 	"github.com/brianlusina/gochain/internal/proof"
+	"github.com/brianlusina/gochain/internal/transaction"
 )
 
 func main() {
-	genesisBlock := factory.CreateBlock("Genesis", "")
+	coinbaseTransaction := transaction.New(transaction.TransactionParams{
+		Sender:   "Coinbase",
+		Receiver: "Genesis",
+		Amount:   0.0,
+		Coinbase: true,
+	})
+
+	genesisBlock := factory.CreateBlock("Genesis", "", []*transaction.Transaction{coinbaseTransaction})
 
 	chain := blockchain.New(blockchain.BlockChainParams[string]{
 		Blocks: []*block.Block[string]{genesisBlock},

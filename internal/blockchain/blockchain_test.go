@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/brianlusina/gochain/internal/block"
+	"github.com/brianlusina/gochain/internal/transaction"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,7 +49,10 @@ func TestNewBlock(t *testing.T) {
 
 		// adding a new block
 		newBlockData := "data-3"
-		actual.AddBlock(newBlockData)
+		recipient := "recipient"
+		amount := 10.0
+		transactions := []*transaction.Transaction{}
+		actual.AddBlock(newBlockData, recipient, amount, transactions)
 		assert.Equal(t, len(tc.blocks)+1, len(actual.blocks))
 	}
 }

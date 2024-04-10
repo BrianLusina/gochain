@@ -17,10 +17,11 @@ func CreateBlock[T any](data T, prevHash string, transactions []*transaction.Tra
 	initialNonce := rand.Intn(10000)
 
 	b := block.New[T](block.BlockParams[T]{
-		Hash:     "",
-		Data:     data,
-		PrevHash: prevHash,
-		Nonce:    initialNonce,
+		Hash:         "",
+		Data:         data,
+		PrevHash:     prevHash,
+		Nonce:        initialNonce,
+		Transactions: transactions,
 	})
 
 	pow := proof.NewProofOfWork[T](*b)
