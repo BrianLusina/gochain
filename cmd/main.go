@@ -9,6 +9,7 @@ import (
 	"github.com/brianlusina/gochain/internal/factory"
 	"github.com/brianlusina/gochain/internal/proof"
 	"github.com/brianlusina/gochain/internal/transaction"
+	"github.com/brianlusina/gochain/internal/wallet"
 )
 
 func main() {
@@ -25,10 +26,46 @@ func main() {
 		Blocks: []*block.Block[string]{genesisBlock},
 	})
 
-	chain.AddBlock("Block 1", "Alice", 10.0, []*transaction.Transaction{
-		transaction.New(transaction.TransactionParams{Sender: "Alice", Receiver: "Bob", Amount: 1.5}),
-		transaction.New(transaction.TransactionParams{Sender: "Alice", Receiver: "Charlie", Amount: 19.5}),
+	aliceWallet, err := wallet.New("alice")
+	if err != nil {
+		fmt.Println("Error creating Alice's wallet:", err)
+		return
+	}
+	fmt.Println("Alice's wallet created successfully")
+
+	// Create a wallet for Bob.
+	bobWallet, err := wallet.New("bob")
+	if err != nil {
+		fmt.Println("Error creating Bob's wallet:", err)
+		return
+	}
+	fmt.Println("Bob's wallet created successfully")
+
+	// Create a transaction from Alice to Bob.
+	tx := transaction.New(transaction.TransactionParams{
+		Sender:   aliceWallet.PublicKey().N.String(),
+		Receiver: bobWallet.PublicKey().N.String(),
+		Amount:   5.0,
 	})
+	fmt.Println("Alice to Bob Transaction created successfully")
+
+	// Sign the transaction with Alice’s wallet.
+	signature, err := aliceWallet.SignTransaction(tx)
+	if err != nil {
+		fmt.Println("Error signing the transaction:", err)
+		return
+	}
+
+	// Verify the transaction using Alice’s wallet, public key, and the signature.
+	err = wallet.VerifyTransaction(tx, aliceWallet.PublicKey(), signature)
+	if err != nil {
+		fmt.Println("Transaction verification failed:", err)
+		return
+	}
+
+	fmt.Println("Transaction Verified Successfully")
+
+	chain.AddBlock("Block 1", "Alice", 10.0, []*transaction.Transaction{tx})
 
 	chain.AddBlock("Block 2", "Bob", 10.0, []*transaction.Transaction{
 		transaction.New(transaction.TransactionParams{

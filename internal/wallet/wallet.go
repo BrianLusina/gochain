@@ -15,6 +15,9 @@ import (
 // Wallet structure representing a user's wallet with access to assets.
 // RSA is sued for key generation, signing of transactions, and verification of transaction signatures.
 type Wallet struct {
+	// userID owner of this wallet
+	userID string
+
 	// privateKey that in combination with the publicKey is used to perform decryption
 	privateKey *rsa.PrivateKey
 
@@ -24,16 +27,27 @@ type Wallet struct {
 }
 
 // New creates a new wallet structure
-func New() (*Wallet, error) {
+func New(userID string) (*Wallet, error) {
 	privateKey, publicKey, err := GenerateRSAKeys()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new wallet %s", err.Error())
 	}
 
 	return &Wallet{
+		userID:     userID,
 		privateKey: privateKey,
 		publicKey:  publicKey,
 	}, nil
+}
+
+// UserID is the ID of the user who owns this wallet
+func (w *Wallet) UserID() string {
+	return w.userID
+}
+
+// PublicKey returns the publicKey associated with this wallet
+func (w *Wallet) PublicKey() *rsa.PublicKey {
+	return w.publicKey
 }
 
 // SignTransaction signs a given transaction and returns the signature of the signing or an error
