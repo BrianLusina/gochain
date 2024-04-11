@@ -75,24 +75,17 @@ install:
 tidy:
 	go mod tidy -v
 
-# Runs project
-run:
-	go run app/cmd/main.go
-
 test:
 	go test ./...
 
 test-coverage:
 	go test -tags testing -v -cover -covermode=atomic ./...
 
-fmt: ## gofmt and goimports all go files
-	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
-
 clean:
 	if [ -f ${BIN_DIR} ] ; then rm ${BIN_DIR} ; fi
 
 lint:
-	./bin/golangci-lint run ./...
+	golangci-lint run ./...
 
 build:
 	@echo "Building application"

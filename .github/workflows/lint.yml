@@ -7,37 +7,14 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  checks: write
 
 jobs:
-  lint-mypy:
+  lint:
     strategy:
       matrix:
-        python-version: [ '3.12' ]
-    name: mypy Type Checking
-    uses: SanctumLabs/ci-workflows/.github/workflows/python-lint.yml@main
-    with:
-      command: make lint-mypy
-      python-version: ${{ matrix.python-version }}
-      packager: poetry
-
-  lint-flake8:
-    strategy:
-      matrix:
-        python-version: [ '3.12' ]
+        go-version: [ '1.20' ]
     name: Flake8
-    uses: SanctumLabs/ci-workflows/.github/workflows/python-lint.yml@main
+    uses: SanctumLabs/ci-workflows/.github/workflows/go-lint.yml@main
     with:
-      command: make lint-flake8
-      python-version: ${{ matrix.python-version }}
-      packager: poetry
-
-  lint-pylint:
-    strategy:
-      matrix:
-        python-version: [ '3.12' ]
-    name: Pylint
-    uses: SanctumLabs/ci-workflows/.github/workflows/python-lint.yml@main
-    with:
-      command: make lint-pylint
-      python-version: ${{ matrix.python-version }}
-      packager: poetry
+      go-version: ${{ matrix.go-version }}
