@@ -67,34 +67,25 @@ setup-linting:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ./bin v1.41.0
 	chmod +x ./bin/golangci-lint
 
-# Download dependencies
-install:
+install: ## Download dependencies
 	go mod download
 
-# remove unused dependencies
-tidy:
+tidy: ## remove unused dependencies
 	go mod tidy -v
 
-# Runs project
-run:
-	go run app/cmd/main.go
-
-test:
+test: ## unit tests
 	go test ./...
 
-test-coverage:
+test-coverage: ## test coverage
 	go test -tags testing -v -cover -covermode=atomic ./...
 
-fmt: ## gofmt and goimports all go files
-	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
-
-clean:
+clean: ## clearn
 	if [ -f ${BIN_DIR} ] ; then rm ${BIN_DIR} ; fi
 
-lint:
-	./bin/golangci-lint run ./...
+lint: ## run lint
+	golangci-lint run ./...
 
-build:
+build: ## build the application
 	@echo "Building application"
 	go build -o $(BIN_DIR) cmd/main.go
 
