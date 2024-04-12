@@ -29,10 +29,6 @@ slack-success:
       optional: true
     - job: test
       optional: true
-    - job: build
-      optional: true
-    - job: publish
-      optional: true
 
 slack-failure:
   before_script: [ ]
@@ -40,8 +36,4 @@ slack-failure:
     - job: lint
       optional: true
     - job: test
-      optional: true
-    - job: build
-      optional: true
-    - job: publish
       optional: true

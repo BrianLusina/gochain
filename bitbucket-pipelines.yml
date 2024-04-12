@@ -14,11 +14,6 @@ pipelines:
         script:
           - make test
 
-    - step:
-        name: Run Build
-        script:
-          - make build
-
   branches:
     main:
       - step:
@@ -31,8 +26,3 @@ pipelines:
           name: Run Tests
           script:
             - make test
-
-      - step:
-          name: Run Build
-          script:
-            - make build
