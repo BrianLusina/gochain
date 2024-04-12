@@ -7,8 +7,6 @@ include:
 stages:
   - lint
   - test
-  - build
-  - publish
 
 lint:
   stage: lint
@@ -23,13 +21,6 @@ tests:
     - lint
   script:
     - make test
-
-build:
-  stage: build
-  needs:
-    - tests
-  script:
-    - make build
 
 slack-success:
   before_script: [ ]
